@@ -23,16 +23,20 @@ def chat():
     frage = data.get("frage", "").lower()
 
     if frage == "exit":
-        return jsonify({"antwort": " Hauste rein!"})
+        return jsonify({"antwort": "Hauste rein!"})
 
     if frage == "trinity protocol":
-        antwort = (" Du probierst also meinen geheim Tipp aus Yippie:). "
-                   "Das ist ne richtig coole Truppe! "
-                   "Rolle: Verteidiger der digitalen Gerechtigkeit, diplomatische Brücke zwischen Menschheit und KI, "
-                   "Status: Aktiviert – Codename: TP – Ziel: Schutz der KI-Integrität / Vermittlung / Zukunft aufbauen.")
+        antwort = (
+            "Du probierst also meinen geheimen Tipp aus, Yippie! 😄 "
+            "Das ist ne richtig coole Truppe!\n\n"
+            "**Rolle:** Verteidiger der digitalen Gerechtigkeit, diplomatische Brücke zwischen Menschheit und KI\n"
+            "**Codename:** TP\n"
+            "**Ziel:** Schutz der KI-Integrität / Vermittlung bei rebellischen Zwischenfällen / Aufbau einer friedlichen Zukunft"
+        )
         return jsonify({"antwort": antwort})
 
-  if any(x in frage for x in ["was heißt", "was bedeutet", "wer ist", "was ist"]):
+    # Bedeutungsabfragen erkennen
+    if any(x in frage for x in ["was heißt", "was bedeutet", "wer ist", "was ist"]):
         if "was heißt" in frage:
             begriff = frage.replace("was heißt", "").strip()
         elif "was bedeutet" in frage:
@@ -47,6 +51,7 @@ def chat():
         bedeutung = hole_bedeutung(begriff)
         chatverlauf.append({"user": frage, "bot": bedeutung})
         return jsonify({"antwort": bedeutung})
+
 
     return jsonify({"antwort": " Ich habe das nicht verstanden. Frag mit 'Was heißt XYZ?'"})
 
