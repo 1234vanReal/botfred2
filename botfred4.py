@@ -5,6 +5,7 @@ wikipedia.set_lang("de")
 app = Flask(__name__)
 
 bedeutungen_speicher = {}
+chatverlauf = []
 
 @app.route("/")
 def index():
