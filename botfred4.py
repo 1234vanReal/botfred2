@@ -37,7 +37,7 @@ def chat():
             begriff = frage.replace("was heißt", "").strip()
         else:
             begriff = frage.replace("was bedeutet", "").strip()
-        else:
+    else:
             begriff = frage.replace("wer ist", "").strip()
     else:
         begriff = frage.replace("was ist", "").strip()
