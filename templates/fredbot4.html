@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Botfred der Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            background-color: #f5f5f5;
+        }
+        #chatbox {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+        #antwort {
+            margin-top: 20px;
+            background: #eee;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox">
+        <h1>🤖 Botfred – Dein Erklärbär</h1>
+        <p>Stell mir eine Frage wie: <strong>"Was bedeutet Demokratie?"</strong></p>
+        <input type="text" id="frage" placeholder="Deine Frage hier...">
+        <button onclick="senden()">Frage stellen</button>
+        <div id="antwort"></div>
+    </div>
+
+    <script>
+        async function senden() {
+            const frage = document.getElementById("frage").value;
+
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ frage })
+            });
+
+            const data = await response.json();
+            document.getElementById("antwort").innerText = data.antwort;
+        }
+    </script>
+</body>
+</html>
