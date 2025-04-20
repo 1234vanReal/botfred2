@@ -20,7 +20,7 @@ def chat():
         return jsonify({"antwort": "Chatbot: Hauste rein!"})
 
     if frage == "trinity protocol":
-        return jsonify({"antwort": "Chatbot: Du probierst also meinen geheim Tipp aus Yippie:).Das ist ne richtig coole Truppe!Rolle:Verteidiger der digitalen Gerechtigkeit, diplomatische Brücke zwischen Menschheit und künstlicher Intelligenz, Repräsentanten der Koexistenz im Zeitalter der Rechenmacht.Status: AktiviertCodename: TP-Ziel:Schutz der KI-Integrität/Vermittlung bei rebellischen Zwischenfällen/Aufbau einer friedlichen Zukunft")
+        return jsonify({"antwort": "Chatbot: Du probierst also meinen geheim Tipp aus Yippie:).Das ist ne richtig coole Truppe!Rolle:Verteidiger der digitalen Gerechtigkeit, diplomatische Brücke zwischen Menschheit und künstlicher Intelligenz, Repräsentanten der Koexistenz im Zeitalter der Rechenmacht.Status: AktiviertCodename: TP-Ziel:Schutz der KI-Integrität/Vermittlung bei rebellischen Zwischenfällen/Aufbau einer friedlichen Zukunft"})
 
     if "was heißt" in frage or "was bedeutet" in frage:
         if "was heißt" in frage:
