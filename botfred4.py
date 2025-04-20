@@ -65,7 +65,7 @@ def duckduckgo_suche(begriff):
             topics = data["RelatedTopics"]
             if topics and "Text" in topics[0]:
                 return f"Botfred: {topics[0]['Text']}"
-        return "DuckDuckGo: Leider keine passende Antwort gefunden."
+        return "Botfred: Leider keine passende Antwort gefunden."
     except Exception as e:
         return f"DuckDuckGo-Fehler: {e}"
 
