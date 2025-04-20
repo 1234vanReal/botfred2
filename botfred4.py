@@ -32,23 +32,21 @@ def chat():
                    "Status: Aktiviert – Codename: TP – Ziel: Schutz der KI-Integrität / Vermittlung / Zukunft aufbauen.")
         return jsonify({"antwort": antwort})
 
-  if "was heißt" in frage:
-    begriff = frage.replace("was heißt", "").strip()
-elif "was bedeutet" in frage:
-    begriff = frage.replace("was bedeutet", "").strip()
-elif "wer ist" in frage:
-    begriff = frage.replace("wer ist", "").strip()
-elif "was ist" in frage:
-    begriff = frage.replace("was ist", "").strip()
-else:
-    begriff = frage.strip()
-
-        if begriff:
-            bedeutung = hole_bedeutung(begriff)
-            chatverlauf.append({"user": frage, "bot": bedeutung})
-            return jsonify({"antwort": f"Chatbot: {bedeutung}"})
+  if any(x in frage for x in ["was heißt", "was bedeutet", "wer ist", "was ist"]):
+        if "was heißt" in frage:
+            begriff = frage.replace("was heißt", "").strip()
+        elif "was bedeutet" in frage:
+            begriff = frage.replace("was bedeutet", "").strip()
+        elif "wer ist" in frage:
+            begriff = frage.replace("wer ist", "").strip()
+        elif "was ist" in frage:
+            begriff = frage.replace("was ist", "").strip()
         else:
-            return jsonify({"antwort": " Bitte gib einen Begriff an!"})
+            begriff = frage.strip()
+
+        bedeutung = hole_bedeutung(begriff)
+        chatverlauf.append({"user": frage, "bot": bedeutung})
+        return jsonify({"antwort": bedeutung})
 
     return jsonify({"antwort": " Ich habe das nicht verstanden. Frag mit 'Was heißt XYZ?'"})
 
