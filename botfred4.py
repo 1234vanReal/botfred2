@@ -48,7 +48,7 @@ def hole_bedeutung(begriff):
     except Exception as e:
         return f"Fehler: {e}"
         
-            chatverlauf.append(f"Bot: {antwort}")
+          
 
     return jsonify({"antwort": antwort, "verlauf": chatverlauf})
 
