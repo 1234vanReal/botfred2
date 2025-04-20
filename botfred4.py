@@ -26,7 +26,7 @@ def chat():
         return jsonify({"antwort": "Chatbot: Hauste rein!"})
 
     if frage == "trinity protocol":
-        antwort = ("Chatbot: Du probierst also meinen geheim Tipp aus Yippie:). "
+        antwort = (" Du probierst also meinen geheim Tipp aus Yippie:). "
                    "Das ist ne richtig coole Truppe! "
                    "Rolle: Verteidiger der digitalen Gerechtigkeit, diplomatische Brücke zwischen Menschheit und KI, "
                    "Status: Aktiviert – Codename: TP – Ziel: Schutz der KI-Integrität / Vermittlung / Zukunft aufbauen.")
@@ -43,9 +43,9 @@ def chat():
             chatverlauf.append({"user": frage, "bot": bedeutung})
             return jsonify({"antwort": f"Chatbot: {bedeutung}"})
         else:
-            return jsonify({"antwort": "Chatbot: Bitte gib einen Begriff an!"})
+            return jsonify({"antwort": " Bitte gib einen Begriff an!"})
 
-    return jsonify({"antwort": "Chatbot: Ich habe das nicht verstanden. Frag mit 'Was heißt XYZ?'"})
+    return jsonify({"antwort": " Ich habe das nicht verstanden. Frag mit 'Was heißt XYZ?'"})
 
 # 🔍 Fallback-Funktion: DuckDuckGo
 def duckduckgo_suche(begriff):
@@ -62,12 +62,12 @@ def duckduckgo_suche(begriff):
         data = response.json()
 
         if data.get("AbstractText"):
-            return f"DuckDuckGo: {data['AbstractText']}"
+            return f" {data['AbstractText']}"
         elif data.get("RelatedTopics"):
             topics = data["RelatedTopics"]
             if topics and "Text" in topics[0]:
                 return f"DuckDuckGo (verwandt): {topics[0]['Text']}"
-        return "DuckDuckGo: Leider keine passende Antwort gefunden."
+        return " Leider keine passende Antwort gefunden."
     except Exception as e:
         return f"DuckDuckGo-Fehler: {e}"
 
@@ -80,9 +80,9 @@ def hole_bedeutung(begriff):
     try:
         ergebnis = wikipedia.summary(begriff, sentences=10, auto_suggest=False)
         bedeutungen_speicher[begriff] = ergebnis
-        return f"Wikipedia: {ergebnis}"
+        return f" {ergebnis}"
     except wikipedia.exceptions.DisambiguationError as e:
-        return f"Wikipedia: Der Begriff ist mehrdeutig. Mögliche Treffer: {', '.join(e.options[:5])}..."
+        return f" Der Begriff ist mehrdeutig. Mögliche Treffer: {', '.join(e.options[:5])}..."
     except wikipedia.exceptions.PageError:
         pass  # Versuche DuckDuckGo
     except Exception:
