@@ -32,7 +32,7 @@ def chat():
                    "Status: Aktiviert – Codename: TP – Ziel: Schutz der KI-Integrität / Vermittlung / Zukunft aufbauen.")
         return jsonify({"antwort": antwort})
 
-    if "was heißt" in frage or "was bedeutet" in frage or "wer ist" in frage or "was ist" in frage:
+  if "was heißt" in frage:
     begriff = frage.replace("was heißt", "").strip()
 elif "was bedeutet" in frage:
     begriff = frage.replace("was bedeutet", "").strip()
