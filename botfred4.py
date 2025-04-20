@@ -5,6 +5,7 @@ import os
 
 wikipedia.set_lang("de")
 app = Flask(__name__)
+duckduckgo.set_lang("de")
 
 bedeutungen_speicher = {}
 chatverlauf = []
@@ -63,7 +64,7 @@ def duckduckgo_suche(begriff):
         elif data.get("RelatedTopics"):
             topics = data["RelatedTopics"]
             if topics and "Text" in topics[0]:
-                return f"DuckDuckGo (verwandt): {topics[0]['Text']}"
+                return f"Botfred: {topics[0]['Text']}"
         return "DuckDuckGo: Leider keine passende Antwort gefunden."
     except Exception as e:
         return f"DuckDuckGo-Fehler: {e}"
