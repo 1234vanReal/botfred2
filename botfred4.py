@@ -55,6 +55,7 @@ def duckduckgo_suche(begriff):
         "format": "json",
         "no_redirect": 1,
         "no_html": 1
+         "kl": "de-de"
     }
 
     try:
