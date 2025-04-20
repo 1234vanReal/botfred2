@@ -23,7 +23,7 @@ def chat():
     frage = data.get("frage", "").lower()
 
     if frage == "exit":
-        return jsonify({"antwort": "Chatbot: Hauste rein!"})
+        return jsonify({"antwort": " Hauste rein!"})
 
     if frage == "trinity protocol":
         antwort = (" Du probierst also meinen geheim Tipp aus Yippie:). "
