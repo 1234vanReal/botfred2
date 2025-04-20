@@ -78,7 +78,7 @@ def hole_bedeutung(begriff):
 
     # Wikipedia versuchen
     try:
-        ergebnis = wikipedia.summary(begriff, sentences=2, auto_suggest=False)
+        ergebnis = wikipedia.summary(begriff, sentences=10, auto_suggest=False)
         bedeutungen_speicher[begriff] = ergebnis
         return f"Wikipedia: {ergebnis}"
     except wikipedia.exceptions.DisambiguationError as e:
