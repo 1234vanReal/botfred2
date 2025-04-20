@@ -33,14 +33,16 @@ def chat():
         return jsonify({"antwort": antwort})
 
     if "was heißt" in frage or "was bedeutet" in frage or "wer ist" in frage or "was ist" in frage:
-        if "was heißt" in frage:
-            begriff = frage.replace("was heißt", "").strip()
-        else:
-            begriff = frage.replace("was bedeutet", "").strip()
-    else:
-            begriff = frage.replace("wer ist", "").strip()
+       if "was heißt" in frage:
+    begriff = frage.replace("was heißt", "").strip()
+elif "was bedeutet" in frage:
+    begriff = frage.replace("was bedeutet", "").strip()
+elif "wer ist" in frage:
+    begriff = frage.replace("wer ist", "").strip()
+elif "was ist" in frage:
+    begriff = frage.replace("was ist", "").strip()
 else:
-        begriff = frage.replace("was ist", "").strip()
+    begriff = frage.strip()
 
         if begriff:
             bedeutung = hole_bedeutung(begriff)
