@@ -3,16 +3,19 @@ import wikipedia
 import requests
 import os
 
+# Wikipedia auf Deutsch
 wikipedia.set_lang("de")
-app = Flask(__name__)
-duckduckgo.set_lang("de")
 
+# Flask-App starten
+app = Flask(__name__)
+
+# Speicher für Bedeutungen & Chatverlauf
 bedeutungen_speicher = {}
 chatverlauf = []
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html")  # Deine HTML-Datei
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -23,13 +26,11 @@ def chat():
         return jsonify({"antwort": "Chatbot: Hauste rein!"})
 
     if frage == "trinity protocol":
-        return jsonify({
-            "antwort": "Chatbot: Du probierst also meinen geheim Tipp aus Yippie:). Das ist ne richtig coole Truppe! "
-                       "Rolle: Verteidiger der digitalen Gerechtigkeit, diplomatische Brücke zwischen Menschheit und künstlicher Intelligenz, "
-                       "Repräsentanten der Koexistenz im Zeitalter der Rechenmacht. Status: Aktiviert "
-                       "Codename: TP-Ziel: Schutz der KI-Integrität / Vermittlung bei rebellischen Zwischenfällen / "
-                       "Aufbau einer friedlichen Zukunft"
-        })
+        antwort = ("Chatbot: Du probierst also meinen geheim Tipp aus Yippie:). "
+                   "Das ist ne richtig coole Truppe! "
+                   "Rolle: Verteidiger der digitalen Gerechtigkeit, diplomatische Brücke zwischen Menschheit und KI, "
+                   "Status: Aktiviert – Codename: TP – Ziel: Schutz der KI-Integrität / Vermittlung / Zukunft aufbauen.")
+        return jsonify({"antwort": antwort})
 
     if "was heißt" in frage or "was bedeutet" in frage:
         if "was heißt" in frage:
@@ -39,13 +40,14 @@ def chat():
 
         if begriff:
             bedeutung = hole_bedeutung(begriff)
+            chatverlauf.append({"user": frage, "bot": bedeutung})
             return jsonify({"antwort": f"Chatbot: {bedeutung}"})
         else:
             return jsonify({"antwort": "Chatbot: Bitte gib einen Begriff an!"})
 
     return jsonify({"antwort": "Chatbot: Ich habe das nicht verstanden. Frag mit 'Was heißt XYZ?'"})
 
-# 🔎 DuckDuckGo als Fallback
+# 🔍 Fallback-Funktion: DuckDuckGo
 def duckduckgo_suche(begriff):
     url = "https://api.duckduckgo.com/"
     params = {
@@ -64,24 +66,34 @@ def duckduckgo_suche(begriff):
         elif data.get("RelatedTopics"):
             topics = data["RelatedTopics"]
             if topics and "Text" in topics[0]:
-                return f"Botfred: {topics[0]['Text']}"
-        return "Botfred: Leider keine passende Antwort gefunden."
+                return f"DuckDuckGo (verwandt): {topics[0]['Text']}"
+        return "DuckDuckGo: Leider keine passende Antwort gefunden."
     except Exception as e:
         return f"DuckDuckGo-Fehler: {e}"
 
-# 🧠 Wikipedia mit DuckDuckGo als Fallback
+# 💡 Bedeutungs-Funktion mit Fallback
 def hole_bedeutung(begriff):
     if begriff in bedeutungen_speicher:
         return f"Ich weiß es schon! {bedeutungen_speicher[begriff]}"
+
+    # Wikipedia versuchen
     try:
-        ergebnis = wikipedia.summary(begriff, sentences=1, auto_suggest=False)
+        ergebnis = wikipedia.summary(begriff, sentences=2, auto_suggest=False)
         bedeutungen_speicher[begriff] = ergebnis
         return f"Wikipedia: {ergebnis}"
-    except:
-        duck = duckduckgo_suche(begriff)
-        return duck
+    except wikipedia.exceptions.DisambiguationError as e:
+        return f"Wikipedia: Der Begriff ist mehrdeutig. Mögliche Treffer: {', '.join(e.options[:5])}..."
+    except wikipedia.exceptions.PageError:
+        pass  # Versuche DuckDuckGo
+    except Exception:
+        pass  # Fehler → DuckDuckGo
 
-# 🌍 Start für Render etc.
+    # DuckDuckGo fallback
+    duck = duckduckgo_suche(begriff)
+    bedeutungen_speicher[begriff] = duck
+    return duck
+
+# 🔧 Render oder lokal starten
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
