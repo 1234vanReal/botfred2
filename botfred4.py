@@ -16,9 +16,7 @@ def chat():
     data = request.json
     frage = data.get("frage", "").lower()
 
-        chatverlauf.append(f"User: {frage}")
-    
-    antwort = ""
+
 
     if frage == "exit":
         return jsonify({"antwort": "Chatbot: Hauste rein!"})
