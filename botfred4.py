@@ -15,7 +15,7 @@ chatverlauf = []
 
 @app.route("/")
 def index():
-    return render_template("index.html")  # Deine HTML-Datei
+    return render_template("index.html")  # deine HTML-Datei
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -33,7 +33,8 @@ def chat():
             "**Codename:** TP\n"
             "**Ziel:** Schutz der KI-Integrität / Vermittlung bei rebellischen Zwischenfällen / Aufbau einer friedlichen Zukunft"
         )
-        return jsonify({"antwort": antwort})
+        bild_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Artificial_intelligence.jpg/640px-Artificial_intelligence.jpg"
+        return jsonify({"antwort": antwort, "bild_url": bild_url})
 
     # Bedeutungsabfragen erkennen
     if any(x in frage for x in ["was heißt", "was bedeutet", "wer ist", "was ist"]):
@@ -49,13 +50,14 @@ def chat():
             begriff = frage.strip()
 
         bedeutung = hole_bedeutung(begriff)
+        bild_url = hole_bild_url(begriff)
+
         chatverlauf.append({"user": frage, "bot": bedeutung})
-        return jsonify({"antwort": bedeutung})
+        return jsonify({"antwort": bedeutung, "bild_url": bild_url})
 
+    return jsonify({"antwort": "Ich habe das nicht verstanden. Frag mit 'Was heißt XYZ?'"})
 
-    return jsonify({"antwort": " Ich habe das nicht verstanden. Frag mit 'Was heißt XYZ?'"})
-
-# 🔍 Fallback-Funktion: DuckDuckGo
+# 🔍 DuckDuckGo als Fallback
 def duckduckgo_suche(begriff):
     url = "https://api.duckduckgo.com/"
     params = {
@@ -63,7 +65,7 @@ def duckduckgo_suche(begriff):
         "format": "json",
         "no_redirect": 1,
         "no_html": 1,
-         "kl": "de-de"
+        "kl": "de-de"
     }
 
     try:
@@ -71,38 +73,48 @@ def duckduckgo_suche(begriff):
         data = response.json()
 
         if data.get("AbstractText"):
-            return f" {data['AbstractText']}"
+            return data['AbstractText']
         elif data.get("RelatedTopics"):
             topics = data["RelatedTopics"]
             if topics and "Text" in topics[0]:
                 return f"DuckDuckGo (verwandt): {topics[0]['Text']}"
-        return " Leider keine passende Antwort gefunden."
+        return "Leider keine passende Antwort gefunden."
     except Exception as e:
         return f"DuckDuckGo-Fehler: {e}"
 
-# 💡 Bedeutungs-Funktion mit Fallback
+# 💡 Bedeutung ermitteln
 def hole_bedeutung(begriff):
     if begriff in bedeutungen_speicher:
         return f"Ich weiß es schon! {bedeutungen_speicher[begriff]}"
 
-    # Wikipedia versuchen
     try:
-        ergebnis = wikipedia.summary(begriff, sentences=30, auto_suggest=False)
+        ergebnis = wikipedia.summary(begriff, sentences=3, auto_suggest=False)
         bedeutungen_speicher[begriff] = ergebnis
-        return f" {ergebnis}"
+        return ergebnis
     except wikipedia.exceptions.DisambiguationError as e:
-        return f" Der Begriff ist mehrdeutig. Mögliche Treffer: {', '.join(e.options[:5])}..."
+        return f"Der Begriff ist mehrdeutig. Mögliche Treffer: {', '.join(e.options[:5])}..."
     except wikipedia.exceptions.PageError:
-        pass  # Versuche DuckDuckGo
+        pass
     except Exception:
-        pass  # Fehler → DuckDuckGo
+        pass
 
-    # DuckDuckGo fallback
+    # Fallback auf DuckDuckGo
     duck = duckduckgo_suche(begriff)
     bedeutungen_speicher[begriff] = duck
     return duck
 
-# 🔧 Render oder lokal starten
+# 🖼 Bild über Wikipedia holen
+def hole_bild_url(begriff):
+    try:
+        seite = wikipedia.page(begriff, auto_suggest=False)
+        for bild in seite.images:
+            if any(bild.lower().endswith(ext) for ext in [".jpg", ".jpeg", ".png"]):
+                return bild
+    except Exception:
+        return None
+    return None
+
+#  Lokaler Start
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port
