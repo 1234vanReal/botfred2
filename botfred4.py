@@ -108,13 +108,17 @@ def hole_bild_url(begriff):
     try:
         seite = wikipedia.page(begriff, auto_suggest=False)
         bilder = seite.images
+        print(f"🔍 Bilder gefunden für '{begriff}':")
+        for b in bilder:
+            print(b)
 
         for bild in bilder:
             if bild.lower().endswith((".jpg", ".jpeg", ".png")):
                 if not any(x in bild.lower() for x in ["logo", "icon", "wikimedia", "flag", "symbol", "svg"]):
+                    print("✅ Bild gewählt:", bild)
                     return bild
     except Exception as e:
-        print(f"Bild-Fehler für '{begriff}': {e}")
+        print(f"❌ Fehler beim Bildholen für '{begriff}': {e}")
         return None
 
     return None
