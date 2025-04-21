@@ -91,39 +91,50 @@
         </div>
     </div>
 
-    <script>
-        function senden() {
-            const frageInput = document.getElementById("frage");
-            const frage = frageInput.value.trim();
+<script>
+    function senden() {
+        const frageInput = document.getElementById("frage");
+        const frage = frageInput.value.trim();
 
-            if (!frage) return;
+        if (!frage) return;
 
-            // Zeige User-Eingabe im Chat
-            appendMessage("Du", frage, "user");
+        // Zeige User-Eingabe im Chat
+        appendMessage("Du", frage, "user");
 
-            // Zurücksetzen
-            frageInput.value = "";
+        frageInput.value = "";
 
-            // Anfrage an Flask senden
-            fetch("/chat", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({ frage: frage })
-            })
-            .then(response => response.json())
-            .then(data => {
-                appendMessage("Botfred", data.antwort, "bot");
-            });
+        fetch("/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ frage: frage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            appendMessage("Botfred", data.antwort, "bot", data.bild_url);
+        });
+    }
+
+    function appendMessage(sender, text, type, bildUrl = null) {
+        const chatBox = document.getElementById("chat-box");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${type}`;
+        messageDiv.innerHTML = `<span class="${type}">${sender}:</span> ${text}`;
+
+        chatBox.appendChild(messageDiv);
+
+        // Wenn ein Bild dabei ist, füge es hinzu
+        if (bildUrl) {
+            const img = document.createElement("img");
+            img.src = bildUrl;
+            img.alt = "Bild von Botfred";
+            img.style.maxWidth = "100%";
+            img.style.marginTop = "10px";
+            img.style.borderRadius = "8px";
+            chatBox.appendChild(img);
         }
 
-        function appendMessage(sender, text, type) {
-            const chatBox = document.getElementById("chat-box");
-            const messageDiv = document.createElement("div");
-            messageDiv.className = `message ${type}`;
-            messageDiv.innerHTML = `<span class="${type}">${sender}:</span> ${text}`;
-            chatBox.appendChild(messageDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
 </body>
 </html>
