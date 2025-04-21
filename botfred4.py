@@ -109,13 +109,14 @@ def hole_bild_url(begriff):
         seite = wikipedia.page(begriff, auto_suggest=False)
         bilder = seite.images
 
-        # Bessere Filterung: nur echte Fotos
         for bild in bilder:
-            if any(bild.lower().endswith(ext) for ext in [".jpg", ".jpeg", ".png"]):
-                if "logo" not in bild.lower() and "icon" not in bild.lower() and "wikimedia" not in bild.lower():
+            if bild.lower().endswith((".jpg", ".jpeg", ".png")):
+                if not any(x in bild.lower() for x in ["logo", "icon", "wikimedia", "flag", "symbol", "svg"]):
                     return bild
-    except Exception:
+    except Exception as e:
+        print(f"Bild-Fehler für '{begriff}': {e}")
         return None
+
     return None
 
 #  Lokaler Start
