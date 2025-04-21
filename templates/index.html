@@ -3,79 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <title>Botfred – Dein Sportsfreund🤖</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-        }
+   <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+    }
 
-        .container {
-            max-width: 700px;
-            margin: 40px auto;
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
+    .container {
+        max-width: 700px;
+        margin: 40px auto;
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 
-        h1 {
-            text-align: center;
-            color: #333;
-        }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
 
-        .chat-box {
-            height: 400px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 15px;
-            background-color: #fafafa;
-            border-radius: 8px;
-        }
+    .chat-box {
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 15px;
+        background-color: #fafafa;
+        border-radius: 8px;
+    }
 
-        .message {
-            margin: 10px 0;
-        }
+    .chat-box img {
+        max-width: 100%;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
 
-        .user {
-            color: #0078d7;
-            font-weight: bold;
-        }
+    .message {
+        margin: 10px 0;
+    }
 
-        .bot {
-            color: #2d882d;
-            font-weight: bold;
-        }
+    .user {
+        color: #0078d7;
+        font-weight: bold;
+    }
 
-        .input-group {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
+    .bot {
+        color: #2d882d;
+        font-weight: bold;
+    }
 
-        input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-        }
+    .input-group {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+    }
 
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            background-color: #0078d7;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
 
-        button:hover {
-            background-color: #005ea6;
-        }
-    </style>
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        background-color: #0078d7;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #005ea6;
+    }
+</style>
 </head>
 <body>
     <div class="container">
