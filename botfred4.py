@@ -107,9 +107,13 @@ def hole_bedeutung(begriff):
 def hole_bild_url(begriff):
     try:
         seite = wikipedia.page(begriff, auto_suggest=False)
-        for bild in seite.images:
+        bilder = seite.images
+
+        # Bessere Filterung: nur echte Fotos
+        for bild in bilder:
             if any(bild.lower().endswith(ext) for ext in [".jpg", ".jpeg", ".png"]):
-                return bild
+                if "logo" not in bild.lower() and "icon" not in bild.lower() and "wikimedia" not in bild.lower():
+                    return bild
     except Exception:
         return None
     return None
