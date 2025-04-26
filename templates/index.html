@@ -117,11 +117,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log("Antwort vom Server:", data); // Debugging
+                // Debugging: Logge die Antwort des Servers
+                console.log("Antwort vom Server:", data);
                 appendMessage("Botfred", data.antwort, "bot", data.bild_url);
             })
             .catch(error => {
                 console.error("Fehler bei der Anfrage:", error);
+                appendMessage("Botfred", "Es gab ein Problem mit der Anfrage. Bitte versuche es später noch einmal.", "bot");
             });
         }
 
