@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>🤖 Botfred – Frag mich was!</title>
+    <title>Botfred – Dein Sportsfreund</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -89,7 +89,7 @@
         <h1>🤖 Botfred – Frag mich was!</h1>
 
         <div class="chat-box" id="chat-box">
-            <!-- Nachrichtenverlauf wird hier angezeigt -->
+            <!-- Nachrichtenverlauf -->
         </div>
 
         <div class="input-group">
@@ -99,20 +99,17 @@
     </div>
 
     <script>
-        // Funktion zum Senden der Nachricht
         function senden() {
             const frageInput = document.getElementById("frage");
             const frage = frageInput.value.trim();
 
-            // Wenn keine Eingabe vorhanden, nichts tun
             if (!frage) return;
 
-            // Zeige die User-Eingabe im Chat
+            // Zeige User-Eingabe im Chat
             appendMessage("Du", frage, "user");
 
-            frageInput.value = ""; // Input-Feld leeren
+            frageInput.value = "";
 
-            // Sende die Anfrage an den Server
             fetch("/chat", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -120,8 +117,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Debugging: Antwort des Servers loggen
-                console.log("Antwort vom Server:", data);
+                console.log("Antwort vom Server:", data); // Debugging
                 appendMessage("Botfred", data.antwort, "bot", data.bild_url);
             })
             .catch(error => {
@@ -129,7 +125,6 @@
             });
         }
 
-        // Funktion zum Anhängen von Nachrichten
         function appendMessage(sender, text, type, bildUrl = null) {
             const chatBox = document.getElementById("chat-box");
             const messageDiv = document.createElement("div");
@@ -138,7 +133,7 @@
 
             chatBox.appendChild(messageDiv);
 
-            // Wenn ein Bild vorhanden ist, füge es hinzu
+            // Wenn ein Bild dabei ist, füge es hinzu
             if (bildUrl) {
                 const img = document.createElement("img");
                 img.src = bildUrl;
@@ -149,7 +144,7 @@
                 chatBox.appendChild(img);
             }
 
-            chatBox.scrollTop = chatBox.scrollHeight; // Immer nach unten scrollen
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     </script>
 </body>
