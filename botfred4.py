@@ -27,6 +27,8 @@ def chat():
     data = request.json
     frage = data.get("frage", "").lower()
 
+    print(f"Frage empfangen: {frage}")  # Logge die erhaltene Frage
+
     if frage == "exit":
         return jsonify({"antwort": "Hauste rein!"})
 
@@ -110,11 +112,14 @@ def hole_bedeutung(begriff):
         bedeutungen_speicher[begriff] = ergebnis
         return ergebnis
     except wikipedia.exceptions.DisambiguationError as e:
+        print(f"Disambiguierung für {begriff}: {e.options[:5]}")
         return f"Der Begriff ist mehrdeutig. Mögliche Treffer: {', '.join(e.options[:5])}..."
     except wikipedia.exceptions.PageError:
-        pass
-    except Exception:
-        pass
+        print(f"Seite für {begriff} nicht gefunden.")
+        return f"Keine Wikipedia-Seite für {begriff} gefunden."
+    except Exception as e:
+        print(f"Unbekannter Fehler bei Wikipedia: {e}")
+        return f"Fehler beim Laden der Bedeutung: {e}"
 
     # Fallback auf DuckDuckGo
     duck = duckduckgo_suche(begriff)
@@ -175,3 +180,4 @@ def extrahiere_begriff(frage):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
