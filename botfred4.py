@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 import wikipedia
 import requests
 import os
@@ -14,6 +15,9 @@ wikipedia.set_lang("de")
 # Flask-App starten
 app = Flask(__name__)
 
+# CORS aktivieren
+CORS(app)
+
 # Speicher
 bedeutungen_speicher = {}
 chatverlauf = []
@@ -26,8 +30,6 @@ def index():
 def chat():
     data = request.json
     frage = data.get("frage", "").lower()
-
-    print(f"Frage empfangen: {frage}")  # Logge die erhaltene Frage
 
     if frage == "exit":
         return jsonify({"antwort": "Hauste rein!"})
@@ -49,7 +51,7 @@ def chat():
 
     if typ in ["definition", "person", "erklärung"]:
         begriff = extrahiere_begriff(frage)
-        print(f"➡️ Extrahierter Begriff: {begriff}")
+        print(f"➡️ Extrahiierter Begriff: {begriff}")
 
         try:
             bedeutung = hole_bedeutung(begriff)
@@ -72,7 +74,6 @@ def chat():
         return jsonify({"antwort": "Ich suche den Ort... 🌍 (Wird noch entwickelt!)"})
 
     return jsonify({"antwort": "Ich bin mir nicht sicher, was du meinst – kannst du es anders formulieren?"})
-
 
 # 🔍 DuckDuckGo als Fallback
 def duckduckgo_suche(begriff):
@@ -99,7 +100,6 @@ def duckduckgo_suche(begriff):
     except Exception as e:
         return f"DuckDuckGo-Fehler: {e}"
 
-
 # 💡 Bedeutung ermitteln
 def hole_bedeutung(begriff):
     print(f"📚 hole_bedeutung() aufgerufen für: {begriff}")
@@ -112,20 +112,16 @@ def hole_bedeutung(begriff):
         bedeutungen_speicher[begriff] = ergebnis
         return ergebnis
     except wikipedia.exceptions.DisambiguationError as e:
-        print(f"Disambiguierung für {begriff}: {e.options[:5]}")
         return f"Der Begriff ist mehrdeutig. Mögliche Treffer: {', '.join(e.options[:5])}..."
     except wikipedia.exceptions.PageError:
-        print(f"Seite für {begriff} nicht gefunden.")
-        return f"Keine Wikipedia-Seite für {begriff} gefunden."
-    except Exception as e:
-        print(f"Unbekannter Fehler bei Wikipedia: {e}")
-        return f"Fehler beim Laden der Bedeutung: {e}"
+        pass
+    except Exception:
+        pass
 
     # Fallback auf DuckDuckGo
     duck = duckduckgo_suche(begriff)
     bedeutungen_speicher[begriff] = duck
     return duck
-
 
 # 🖼 Bild über Wikipedia holen
 def hole_bild_url(begriff):
@@ -145,7 +141,6 @@ def hole_bild_url(begriff):
 
     return None
 
-
 # 🧠 Fragetyp-Bestimmung
 def frage_typ_bestimmen(frage):
     frage = frage.lower()
@@ -164,7 +159,6 @@ def frage_typ_bestimmen(frage):
     else:
         return "unbekannt"
 
-
 # 🧠 Begriffsextraktion
 def extrahiere_begriff(frage):
     tokens = word_tokenize(frage)
@@ -175,9 +169,7 @@ def extrahiere_begriff(frage):
         return " ".join(relevante_worte[-2:])  # z. B. "künstliche intelligenz"
     return frage.strip()
 
-
 # 🚀 Start
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
