@@ -5,7 +5,7 @@ import os
 import nltk
 from nltk.tokenize import word_tokenize
 
-# Nur beim ersten Start nötig:
+# Nur beim ersten Start notwendig:
 nltk.download('punkt')
 
 # Wikipedia auf Deutsch
@@ -14,13 +14,13 @@ wikipedia.set_lang("de")
 # Flask-App starten
 app = Flask(__name__)
 
-# Speicher für Bedeutungen & Chatverlauf
+# Speicher
 bedeutungen_speicher = {}
 chatverlauf = []
 
 @app.route("/")
 def index():
-    return render_template("index.html")  # deine HTML-Datei
+    return render_template("index.html")
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -47,8 +47,18 @@ def chat():
 
     if typ in ["definition", "person", "erklärung"]:
         begriff = extrahiere_begriff(frage)
-        bedeutung = hole_bedeutung(begriff)
-        bild_url = hole_bild_url(begriff)
+        print(f"➡️ Extrahierter Begriff: {begriff}")
+
+        try:
+            bedeutung = hole_bedeutung(begriff)
+        except Exception as e:
+            bedeutung = f"Fehler beim Laden der Bedeutung: {e}"
+
+        try:
+            bild_url = hole_bild_url(begriff)
+        except Exception as e:
+            print(f"Bildfehler: {e}")
+            bild_url = None
 
         chatverlauf.append({"user": frage, "bot": bedeutung})
         return jsonify({"antwort": bedeutung, "bild_url": bild_url})
@@ -87,8 +97,11 @@ def duckduckgo_suche(begriff):
     except Exception as e:
         return f"DuckDuckGo-Fehler: {e}"
 
+
 # 💡 Bedeutung ermitteln
 def hole_bedeutung(begriff):
+    print(f"📚 hole_bedeutung() aufgerufen für: {begriff}")
+
     if begriff in bedeutungen_speicher:
         return f"Ich weiß es schon! {bedeutungen_speicher[begriff]}"
 
@@ -108,21 +121,27 @@ def hole_bedeutung(begriff):
     bedeutungen_speicher[begriff] = duck
     return duck
 
+
 # 🖼 Bild über Wikipedia holen
 def hole_bild_url(begriff):
+    print(f"🔍 hole_bild_url() aufgerufen für: {begriff}")
+
     try:
         seite = wikipedia.page(begriff, auto_suggest=False)
         bilder = seite.images
         for bild in bilder:
             if bild.lower().endswith((".jpg", ".jpeg", ".png")):
                 if not any(x in bild.lower() for x in ["logo", "icon", "wikimedia", "flag", "symbol", "svg"]):
+                    print(f"✅ Bild gefunden: {bild}")
                     return bild
     except Exception as e:
-        print(f"❌ Fehler beim Bildholen für '{begriff}': {e}")
+        print(f"❌ Fehler beim Bildholen: {e}")
         return None
+
     return None
 
-# 🧠 Fragetyp-Bestimmung mit NLP
+
+# 🧠 Fragetyp-Bestimmung
 def frage_typ_bestimmen(frage):
     frage = frage.lower()
     tokens = word_tokenize(frage)
@@ -140,15 +159,19 @@ def frage_typ_bestimmen(frage):
     else:
         return "unbekannt"
 
-# 🧠 Begriff automatisch aus der Frage extrahieren (simple Variante)
+
+# 🧠 Begriffsextraktion
 def extrahiere_begriff(frage):
     tokens = word_tokenize(frage)
-    relevante_worte = [w for w in tokens if w.isalpha() and w.lower() not in ["was", "ist", "wer", "wie", "wann", "wo", "heißt", "bedeutet", "macht", "man", "die", "der", "das"]]
+    stopwords = ["was", "ist", "wer", "wie", "wann", "wo", "heißt", "bedeutet", "macht", "man", "die", "der", "das"]
+    relevante_worte = [w for w in tokens if w.isalpha() and w.lower() not in stopwords]
+
     if relevante_worte:
         return " ".join(relevante_worte[-2:])  # z. B. "künstliche intelligenz"
     return frage.strip()
 
-#  Lokaler Start
+
+# 🚀 Start
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
