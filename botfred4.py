@@ -1,13 +1,7 @@
 from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
 import wikipedia
 import requests
 import os
-import nltk
-from nltk.tokenize import word_tokenize
-
-# Nur beim ersten Start notwendig:
-nltk.download('punkt')
 
 # Wikipedia auf Deutsch
 wikipedia.set_lang("de")
@@ -15,16 +9,13 @@ wikipedia.set_lang("de")
 # Flask-App starten
 app = Flask(__name__)
 
-# CORS aktivieren
-CORS(app)
-
-# Speicher
+# Speicher für Bedeutungen & Chatverlauf
 bedeutungen_speicher = {}
 chatverlauf = []
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html")  # deine HTML-Datei
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -45,35 +36,26 @@ def chat():
         bild_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Artificial_intelligence.jpg/640px-Artificial_intelligence.jpg"
         return jsonify({"antwort": antwort, "bild_url": bild_url})
 
-    # 🧠 NLP-Fragetyp erkennen
-    typ = frage_typ_bestimmen(frage)
-    print(f"🧠 Fragetyp erkannt: {typ}")
+    # Bedeutungsabfragen erkennen
+    if any(x in frage for x in ["was heißt", "was bedeutet", "wer ist", "was ist"]):
+        if "was heißt" in frage:
+            begriff = frage.replace("was heißt", "").strip()
+        elif "was bedeutet" in frage:
+            begriff = frage.replace("was bedeutet", "").strip()
+        elif "wer ist" in frage:
+            begriff = frage.replace("wer ist", "").strip()
+        elif "was ist" in frage:
+            begriff = frage.replace("was ist", "").strip()
+        else:
+            begriff = frage.strip()
 
-    if typ in ["definition", "person", "erklärung"]:
-        begriff = extrahiere_begriff(frage)
-        print(f"➡️ Extrahiierter Begriff: {begriff}")
-
-        try:
-            bedeutung = hole_bedeutung(begriff)
-        except Exception as e:
-            bedeutung = f"Fehler beim Laden der Bedeutung: {e}"
-
-        try:
-            bild_url = hole_bild_url(begriff)
-        except Exception as e:
-            print(f"Bildfehler: {e}")
-            bild_url = None
+        bedeutung = hole_bedeutung(begriff)
+        bild_url = hole_bild_url(begriff)
 
         chatverlauf.append({"user": frage, "bot": bedeutung})
         return jsonify({"antwort": bedeutung, "bild_url": bild_url})
 
-    elif typ == "zeit":
-        return jsonify({"antwort": "Ich versuche herauszufinden, wann das war... 🕰 (Feature kommt bald!)"})
-
-    elif typ == "ort":
-        return jsonify({"antwort": "Ich suche den Ort... 🌍 (Wird noch entwickelt!)"})
-
-    return jsonify({"antwort": "Ich bin mir nicht sicher, was du meinst – kannst du es anders formulieren?"})
+    return jsonify({"antwort": "Ich habe das nicht verstanden. Frag mit 'Was heißt XYZ?'"})
 
 # 🔍 DuckDuckGo als Fallback
 def duckduckgo_suche(begriff):
@@ -102,8 +84,6 @@ def duckduckgo_suche(begriff):
 
 # 💡 Bedeutung ermitteln
 def hole_bedeutung(begriff):
-    print(f"📚 hole_bedeutung() aufgerufen für: {begriff}")
-
     if begriff in bedeutungen_speicher:
         return f"Ich weiß es schon! {bedeutungen_speicher[begriff]}"
 
@@ -125,51 +105,25 @@ def hole_bedeutung(begriff):
 
 # 🖼 Bild über Wikipedia holen
 def hole_bild_url(begriff):
-    print(f"🔍 hole_bild_url() aufgerufen für: {begriff}")
-
     try:
         seite = wikipedia.page(begriff, auto_suggest=False)
         bilder = seite.images
+        print(f"🔍 Bilder gefunden für '{begriff}':")
+        for b in bilder:
+            print(b)
+
         for bild in bilder:
             if bild.lower().endswith((".jpg", ".jpeg", ".png")):
                 if not any(x in bild.lower() for x in ["logo", "icon", "wikimedia", "flag", "symbol", "svg"]):
-                    print(f"✅ Bild gefunden: {bild}")
+                    print("✅ Bild gewählt:", bild)
                     return bild
     except Exception as e:
-        print(f"❌ Fehler beim Bildholen: {e}")
+        print(f"❌ Fehler beim Bildholen für '{begriff}': {e}")
         return None
 
     return None
 
-# 🧠 Fragetyp-Bestimmung
-def frage_typ_bestimmen(frage):
-    frage = frage.lower()
-    tokens = word_tokenize(frage)
-
-    if frage.startswith("was ist") or "was bedeutet" in frage or "was heißt" in frage:
-        return "definition"
-    elif frage.startswith("wer ist") or frage.startswith("wer war"):
-        return "person"
-    elif frage.startswith("wann"):
-        return "zeit"
-    elif frage.startswith("wo"):
-        return "ort"
-    elif frage.startswith("wie funktioniert") or frage.startswith("wie macht man"):
-        return "erklärung"
-    else:
-        return "unbekannt"
-
-# 🧠 Begriffsextraktion
-def extrahiere_begriff(frage):
-    tokens = word_tokenize(frage)
-    stopwords = ["was", "ist", "wer", "wie", "wann", "wo", "heißt", "bedeutet", "macht", "man", "die", "der", "das"]
-    relevante_worte = [w for w in tokens if w.isalpha() and w.lower() not in stopwords]
-
-    if relevante_worte:
-        return " ".join(relevante_worte[-2:])  # z. B. "künstliche intelligenz"
-    return frage.strip()
-
-# 🚀 Start
+#  Lokaler Start
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
