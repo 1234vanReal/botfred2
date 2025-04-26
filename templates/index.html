@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Botfred – Dein Sportsfreund</title>
+    <title>🤖 Botfred – Frag mich was!</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -89,7 +89,7 @@
         <h1>🤖 Botfred – Frag mich was!</h1>
 
         <div class="chat-box" id="chat-box">
-            <!-- Nachrichtenverlauf -->
+            <!-- Nachrichtenverlauf wird hier angezeigt -->
         </div>
 
         <div class="input-group">
@@ -99,17 +99,20 @@
     </div>
 
     <script>
+        // Funktion zum Senden der Nachricht
         function senden() {
             const frageInput = document.getElementById("frage");
             const frage = frageInput.value.trim();
 
+            // Wenn keine Eingabe vorhanden, nichts tun
             if (!frage) return;
 
-            // Zeige User-Eingabe im Chat
+            // Zeige die User-Eingabe im Chat
             appendMessage("Du", frage, "user");
 
-            frageInput.value = "";
+            frageInput.value = ""; // Input-Feld leeren
 
+            // Sende die Anfrage an den Server
             fetch("/chat", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -117,12 +120,16 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Debugging: Logge die Antwort des Servers
-                console.log("Antwort vom Server:", data); // Hier kannst du sehen, was der Server zurückgibt
+                // Debugging: Antwort des Servers loggen
+                console.log("Antwort vom Server:", data);
                 appendMessage("Botfred", data.antwort, "bot", data.bild_url);
+            })
+            .catch(error => {
+                console.error("Fehler bei der Anfrage:", error);
             });
         }
 
+        // Funktion zum Anhängen von Nachrichten
         function appendMessage(sender, text, type, bildUrl = null) {
             const chatBox = document.getElementById("chat-box");
             const messageDiv = document.createElement("div");
@@ -131,7 +138,7 @@
 
             chatBox.appendChild(messageDiv);
 
-            // Wenn ein Bild dabei ist, füge es hinzu
+            // Wenn ein Bild vorhanden ist, füge es hinzu
             if (bildUrl) {
                 const img = document.createElement("img");
                 img.src = bildUrl;
@@ -142,7 +149,7 @@
                 chatBox.appendChild(img);
             }
 
-            chatBox.scrollTop = chatBox.scrollHeight;
+            chatBox.scrollTop = chatBox.scrollHeight; // Immer nach unten scrollen
         }
     </script>
 </body>
