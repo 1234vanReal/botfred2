@@ -25,6 +25,9 @@ def chat():
     if frage == "exit":
         return jsonify({"antwort": "Hauste rein!"})
 
+    if frage == "hurensohn"
+        return jsonify({"antwort": "Geh dich löschen du Bananenpflücker!"})
+
     if frage == "trinity protocol":
         antwort = (
             "Du probierst also meinen geheimen Tipp aus, Yippie! 😄 "
