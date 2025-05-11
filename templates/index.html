@@ -2,98 +2,123 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Botfred – Dein Sportsfreund</title>
+    <title>Botfred – Dein KI-Sportsfreund</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f2f2f2;
+            background-color: #0d1117;
+            color: #c9d1d9;
             margin: 0;
             padding: 0;
         }
 
         .container {
-            max-width: 700px;
+            max-width: 800px;
             margin: 40px auto;
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: #161b22;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
         }
 
         h1 {
             text-align: center;
-            color: #333;
+            color: #58a6ff;
+            margin-bottom: 30px;
         }
 
         .chat-box {
             height: 400px;
             overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 15px;
-            background-color: #fafafa;
-            border-radius: 8px;
+            border: 1px solid #30363d;
+            padding: 20px;
+            background-color: #0d1117;
+            border-radius: 10px;
+            margin-bottom: 20px;
         }
 
         .chat-box img {
             max-width: 100%;
             margin: 10px 0;
             border-radius: 8px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            box-shadow: 0 0 8px rgba(0,255,204,0.1);
         }
 
         .message {
-            margin: 10px 0;
+            margin: 12px 0;
+            line-height: 1.5;
         }
 
         .user {
-            color: #0078d7;
+            color: #58a6ff;
             font-weight: bold;
         }
 
         .bot {
-            color: #2d882d;
+            color: #3fb950;
             font-weight: bold;
         }
 
         .input-group {
-            margin-top: 20px;
             display: flex;
             gap: 10px;
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
             font-size: 16px;
+            background-color: #21262d;
+            color: #c9d1d9;
+        }
+
+        input[type="text"]::placeholder {
+            color: #8b949e;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 6px;
-            background-color: #0078d7;
+            border-radius: 8px;
+            background-color: #238636;
             color: white;
             font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.2s ease;
         }
 
         button:hover {
-            background-color: #005ea6;
+            background-color: #2ea043;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 15px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1> Botfred – Frag mich was!</h1>
+        <h1>🤖 Botfred – Frag die KI!</h1>
 
         <div class="chat-box" id="chat-box">
             <!-- Nachrichtenverlauf -->
         </div>
 
         <div class="input-group">
-            <input id="frage" type="text" placeholder="Fragen wie:was ist...wer ist...was bedeutet...was heißt..." onkeydown="if(event.key === 'Enter') senden()">
+            <input id="frage" type="text" placeholder="Frage mich: Was ist... Wer ist... Was bedeutet..." onkeydown="if(event.key === 'Enter') senden()">
             <button onclick="senden()">Senden</button>
         </div>
     </div>
@@ -105,7 +130,6 @@
 
             if (!frage) return;
 
-            // Zeige User-Eingabe im Chat
             appendMessage("Du", frage, "user");
 
             frageInput.value = "";
@@ -117,8 +141,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Debugging: Logge die Antwort des Servers
-                console.log("Antwort vom Server:", data); // Hier kannst du sehen, was der Server zurückgibt
+                console.log("Antwort vom Server:", data);
                 appendMessage("Botfred", data.antwort, "bot", data.bild_url);
             });
         }
@@ -128,17 +151,12 @@
             const messageDiv = document.createElement("div");
             messageDiv.className = `message ${type}`;
             messageDiv.innerHTML = `<span class="${type}">${sender}:</span> ${text}`;
-
             chatBox.appendChild(messageDiv);
 
-            // Wenn ein Bild dabei ist, füge es hinzu
             if (bildUrl) {
                 const img = document.createElement("img");
                 img.src = bildUrl;
                 img.alt = "Bild von Botfred";
-                img.style.maxWidth = "100%";
-                img.style.marginTop = "10px";
-                img.style.borderRadius = "8px";
                 chatBox.appendChild(img);
             }
 
