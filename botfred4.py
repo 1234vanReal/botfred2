@@ -17,6 +17,10 @@ chatverlauf = []
 def index():
     return render_template("index.html")  # deine HTML-Datei
 
+@app.route("/feedback")
+def feedback():
+    return render_template("feedback.html")
+
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
