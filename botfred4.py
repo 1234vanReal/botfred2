@@ -29,6 +29,10 @@ def chat():
     if frage == "exit":
         return jsonify({"antwort": "Hauste rein!"})
 
+    if __name__ == "__main__":
+    app.run(debug=True)
+
+
     
     if frage == "trinity protocol":
         antwort = (
