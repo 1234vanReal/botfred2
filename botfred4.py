@@ -25,6 +25,11 @@ class Feedback(db.Model):
 bedeutungen_speicher = {}
 chatverlauf = []
 
+@app.route("/admin/feedback")
+def admin_feedback():
+    feedbacks = Feedback.query.order_by(Feedback.id.desc()).all()
+    return render_template("admin_feedback.html", feedbacks=feedbacks)
+
 @app.route("/")
 def index():
     return render_template("index.html")  # deine HTML-Datei
