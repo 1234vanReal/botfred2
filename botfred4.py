@@ -35,6 +35,20 @@ def feedback():
 
 @app.route("/chat", methods=["POST"])
 def chat():
+    @app.route("/submit_feedback", methods=["POST"])
+def submit_feedback():
+    data = request.get_json()
+    rating = data.get("rating")
+    comment = data.get("comment")
+
+    if not rating or not comment:
+        return jsonify({"status": "error", "message": "Ungültige Daten"}), 400
+
+    fb = Feedback(rating=rating, comment=comment)
+    db.session.add(fb)
+    db.session.commit()
+
+    return jsonify({"status": "success"})
     data = request.json
     frage = data.get("frage", "").lower()
 
