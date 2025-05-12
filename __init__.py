@@ -1,61 +1,71 @@
-# dialects/__init__.py
-# Copyright (C) 2005-2025 the SQLAlchemy authors and contributors
-# <see AUTHORS file>
-#
-# This module is part of SQLAlchemy and is released under
-# the MIT License: https://www.opensource.org/licenses/mit-license.php
+# -*- coding: utf-8 -*-
+"""
+The root of the greenlet package.
+"""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-from __future__ import annotations
+__all__ = [
+    '__version__',
+    '_C_API',
 
-from typing import Callable
-from typing import Optional
-from typing import Type
-from typing import TYPE_CHECKING
+    'GreenletExit',
+    'error',
 
-from .. import util
+    'getcurrent',
+    'greenlet',
 
-if TYPE_CHECKING:
-    from ..engine.interfaces import Dialect
+    'gettrace',
+    'settrace',
+]
 
-__all__ = ("mssql", "mysql", "oracle", "postgresql", "sqlite")
+# pylint:disable=no-name-in-module
 
+###
+# Metadata
+###
+__version__ = '3.2.2'
+from ._greenlet import _C_API # pylint:disable=no-name-in-module
 
-def _auto_fn(name: str) -> Optional[Callable[[], Type[Dialect]]]:
-    """default dialect importer.
+###
+# Exceptions
+###
+from ._greenlet import GreenletExit
+from ._greenlet import error
 
-    plugs into the :class:`.PluginLoader`
-    as a first-hit system.
+###
+# greenlets
+###
+from ._greenlet import getcurrent
+from ._greenlet import greenlet
 
-    """
-    if "." in name:
-        dialect, driver = name.split(".")
-    else:
-        dialect = name
-        driver = "base"
+###
+# tracing
+###
+try:
+    from ._greenlet import gettrace
+    from ._greenlet import settrace
+except ImportError:
+    # Tracing wasn't supported.
+    # XXX: The option to disable it was removed in 1.0,
+    # so this branch should be dead code.
+    pass
 
-    try:
-        if dialect == "mariadb":
-            # it's "OK" for us to hardcode here since _auto_fn is already
-            # hardcoded.   if mysql / mariadb etc were third party dialects
-            # they would just publish all the entrypoints, which would actually
-            # look much nicer.
-            module = __import__(
-                "sqlalchemy.dialects.mysql.mariadb"
-            ).dialects.mysql.mariadb
-            return module.loader(driver)  # type: ignore
-        else:
-            module = __import__("sqlalchemy.dialects.%s" % (dialect,)).dialects
-            module = getattr(module, dialect)
-    except ImportError:
-        return None
+###
+# Constants
+# These constants aren't documented and aren't recommended.
+# In 1.0, USE_GC and USE_TRACING are always true, and USE_CONTEXT_VARS
+# is the same as ``sys.version_info[:2] >= 3.7``
+###
+from ._greenlet import GREENLET_USE_CONTEXT_VARS # pylint:disable=unused-import
+from ._greenlet import GREENLET_USE_GC # pylint:disable=unused-import
+from ._greenlet import GREENLET_USE_TRACING # pylint:disable=unused-import
 
-    if hasattr(module, driver):
-        module = getattr(module, driver)
-        return lambda: module.dialect
-    else:
-        return None
+# Controlling the use of the gc module. Provisional API for this greenlet
+# implementation in 2.0.
+from ._greenlet import CLOCKS_PER_SEC # pylint:disable=unused-import
+from ._greenlet import enable_optional_cleanup # pylint:disable=unused-import
+from ._greenlet import get_clocks_used_doing_optional_cleanup # pylint:disable=unused-import
 
-
-registry = util.PluginLoader("sqlalchemy.dialects", auto_fn=_auto_fn)
-
-plugins = util.PluginLoader("sqlalchemy.plugins")
+# Other APIS in the _greenlet module are for test support.
