@@ -40,7 +40,9 @@ def chat():
         )
 
         if frage == "wer ist henri möllenkamp":
-        antwort = ("Ah du meinst den großen Henri Möllenkamp.Er ist im Internet als SuS_753 bekannt und so groß wie ein Leuchtturm!Falls du ihn treffen solltest richte ihn liebe Grüße von mir aus!" )
+         antwort = (
+            "Ah du meinst Henri Möllenkamp. Im Internet ist er als SuS_753 bekannt und ist so groß wie ein Leuchtturm. Ich suche ihn und werde ihn finden!"
+        )
         
         bild_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Artificial_intelligence.jpg/640px-Artificial_intelligence.jpg"
         return jsonify({"antwort": antwort, "bild_url": bild_url})
