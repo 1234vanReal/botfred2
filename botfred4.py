@@ -39,7 +39,7 @@ def chat():
             "**Ziel:** Schutz der KI-Integrität / Vermittlung bei rebellischen Zwischenfällen / Aufbau einer friedlichen Zukunft"
         )
 
-        if frage == "wer ist henri möllenkamp"
+        if frage == "wer ist henri möllenkamp":
         antwort = (
             "Ah du meinst den großen Henri Möllenkamp.Er ist im Internet als SuS_753 bekannt und so groß wie ein Leuchtturm!Falls du ihn treffen solltest richte ihn liebe Grüße von mir aus!" )
         
