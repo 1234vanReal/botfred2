@@ -9,6 +9,18 @@ wikipedia.set_lang("de")
 # Flask-App starten
 app = Flask(__name__)
 
+from flask_sqlalchemy import SQLAlchemy
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///feedback.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.Text, nullable=False)
+
 # Speicher für Bedeutungen & Chatverlauf
 bedeutungen_speicher = {}
 chatverlauf = []
