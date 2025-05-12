@@ -13,16 +13,16 @@ import datetime
 import encodings.idna  # noqa: F401
 from io import UnsupportedOperation
 
-from urllib3.exceptions import (
+from pip._vendor.urllib3.exceptions import (
     DecodeError,
     LocationParseError,
     ProtocolError,
     ReadTimeoutError,
     SSLError,
 )
-from urllib3.fields import RequestField
-from urllib3.filepost import encode_multipart_formdata
-from urllib3.util import parse_url
+from pip._vendor.urllib3.fields import RequestField
+from pip._vendor.urllib3.filepost import encode_multipart_formdata
+from pip._vendor.urllib3.util import parse_url
 
 from ._internal_utils import to_native_string, unicode_is_ascii
 from .auth import HTTPBasicAuth
@@ -170,7 +170,7 @@ class RequestEncodingMixin:
                         )
                     )
 
-        for k, v in files:
+        for (k, v) in files:
             # support for explicit filename
             ft = None
             fh = None
@@ -268,6 +268,7 @@ class Request(RequestHooksMixin):
         hooks=None,
         json=None,
     ):
+
         # Default empty dicts for dict params.
         data = [] if data is None else data
         files = [] if files is None else files
@@ -276,7 +277,7 @@ class Request(RequestHooksMixin):
         hooks = {} if hooks is None else hooks
 
         self.hooks = default_hooks()
-        for k, v in list(hooks.items()):
+        for (k, v) in list(hooks.items()):
             self.register_hook(event=k, hook=v)
 
         self.method = method
@@ -398,7 +399,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
 
     @staticmethod
     def _get_idna_encoded_host(host):
-        import idna
+        from pip._vendor import idna
 
         try:
             host = idna.encode(host, uts46=True).decode("utf-8")
@@ -437,7 +438,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
         if not scheme:
             raise MissingSchema(
                 f"Invalid URL {url!r}: No scheme supplied. "
-                f"Perhaps you meant https://{url}?"
+                f"Perhaps you meant http://{url}?"
             )
 
         if not host:
@@ -789,12 +790,7 @@ class Response:
     @property
     def apparent_encoding(self):
         """The apparent encoding, provided by the charset_normalizer or chardet libraries."""
-        if chardet is not None:
-            return chardet.detect(self.content)["encoding"]
-        else:
-            # If no character detection library is available, we'll fall back
-            # to a standard Python utf-8 str.
-            return "utf-8"
+        return chardet.detect(self.content)["encoding"]
 
     def iter_content(self, chunk_size=1, decode_unicode=False):
         """Iterates over the response data.  When stream=True is set on the
@@ -869,6 +865,7 @@ class Response:
         for chunk in self.iter_content(
             chunk_size=chunk_size, decode_unicode=decode_unicode
         ):
+
             if pending is not None:
                 chunk = pending + chunk
 

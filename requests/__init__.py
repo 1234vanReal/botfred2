@@ -40,17 +40,14 @@ is at <https://requests.readthedocs.io>.
 
 import warnings
 
-import urllib3
+from pip._vendor import urllib3
 
 from .exceptions import RequestsDependencyWarning
 
-try:
-    from charset_normalizer import __version__ as charset_normalizer_version
-except ImportError:
-    charset_normalizer_version = None
+charset_normalizer_version = None
 
 try:
-    from chardet import __version__ as chardet_version
+    from pip._vendor.chardet import __version__ as chardet_version
 except ImportError:
     chardet_version = None
 
@@ -66,10 +63,10 @@ def check_compatibility(urllib3_version, chardet_version, charset_normalizer_ver
     # Check urllib3 for compatibility.
     major, minor, patch = urllib3_version  # noqa: F811
     major, minor, patch = int(major), int(minor), int(patch)
-    # urllib3 >= 1.21.1
-    assert major >= 1
-    if major == 1:
-        assert minor >= 21
+    # urllib3 >= 1.21.1, <= 1.26
+    assert major == 1
+    assert minor >= 21
+    assert minor <= 26
 
     # Check charset_normalizer for compatibility.
     if chardet_version:
@@ -80,14 +77,10 @@ def check_compatibility(urllib3_version, chardet_version, charset_normalizer_ver
     elif charset_normalizer_version:
         major, minor, patch = charset_normalizer_version.split(".")[:3]
         major, minor, patch = int(major), int(minor), int(patch)
-        # charset_normalizer >= 2.0.0 < 4.0.0
-        assert (2, 0, 0) <= (major, minor, patch) < (4, 0, 0)
+        # charset_normalizer >= 2.0.0 < 3.0.0
+        assert (2, 0, 0) <= (major, minor, patch) < (3, 0, 0)
     else:
-        warnings.warn(
-            "Unable to find acceptable character detection dependency "
-            "(chardet or charset_normalizer).",
-            RequestsDependencyWarning,
-        )
+        raise Exception("You need either charset_normalizer or chardet installed")
 
 
 def _check_cryptography(cryptography_version):
@@ -122,13 +115,18 @@ except (AssertionError, ValueError):
 # if the standard library doesn't support SNI or the
 # 'ssl' library isn't available.
 try:
+    # Note: This logic prevents upgrading cryptography on Windows, if imported
+    #       as part of pip.
+    from pip._internal.utils.compat import WINDOWS
+    if not WINDOWS:
+        raise ImportError("pip internals: don't import cryptography on Windows")
     try:
         import ssl
     except ImportError:
         ssl = None
 
     if not getattr(ssl, "HAS_SNI", False):
-        from urllib3.contrib import pyopenssl
+        from pip._vendor.urllib3.contrib import pyopenssl
 
         pyopenssl.inject_into_urllib3()
 
@@ -140,7 +138,7 @@ except ImportError:
     pass
 
 # urllib3's DependencyWarnings should be silenced.
-from urllib3.exceptions import DependencyWarning
+from pip._vendor.urllib3.exceptions import DependencyWarning
 
 warnings.simplefilter("ignore", DependencyWarning)
 
