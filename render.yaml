@@ -1,9 +1,7 @@
 services:
   - type: web
-    name: botfred
+    name: mein-bot
     env: python
-    buildCommand: ""
-    startCommand: "python botfred4.py"
     envVars:
-      - key: FLASK_ENV
-        value: production
+      - key: PYTHON_VERSION
+        value: 3.10.9
