@@ -99,18 +99,28 @@
             e.preventDefault();
 
             const rating = document.querySelector('input[name="star"]:checked');
-            const comment = document.querySelector('textarea').value.trim();
+    const comment = document.querySelector('textarea').value.trim();
 
-            if (!rating) {
-                alert("Bitte wähle eine Sternebewertung aus.");
-                return;
-            }
+    if (!rating) {
+        alert("Bitte wähle eine Sternebewertung aus.");
+        return;
+    }
 
-            console.log("Feedback:", rating.value, comment); // Hier könntest du es später an einen Server schicken
-
+    fetch("/submit_feedback", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ rating: rating.value, comment: comment })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
             alert("Danke für dein Feedback!");
-            window.location.href = "index.html"; // Zurück zur Startseite
+            window.location.href = "index.html";
+        } else {
+            alert("Fehler beim Speichern.");
         }
+    });
+}
     </script>
 </body>
 </html>
